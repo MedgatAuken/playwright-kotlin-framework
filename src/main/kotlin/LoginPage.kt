@@ -1,14 +1,27 @@
-import com.microsoft.playwright.Page
+package pages
 
-class LoginPage(private val page: Page) {
+import base.BasePage
+import com.microsoft.playwright.Page
+import config.Config
+
+class LoginPage(page: Page) : BasePage(page) {
+    private val username = "[data-test=\"username\"]"
+    private val password = "[data-test=\"password\"]"
+    private val loginButton = "[data-test=\"login-button\"]"
+    private val errorMessage = "[data-test=\"error\"]"
+    private val productsTitle = "[data-test=\"title\"]"
 
     fun open() = apply {
-        page.navigate("https://example.com/login")
+        page.navigate(Config.baseUrl())
+        visible(username) // ensure form is ready before typing
     }
 
     fun login(user: String, pass: String) = apply {
-        page.fill("#username", user)
-        page.fill("#password", pass)
-        page.click("#login")
+        clearAndType(username, user)
+        clearAndType(password, pass)
+        clickWithRetry(loginButton)
     }
+
+    fun waitForProducts(): Boolean = waitFor(productsTitle)
+    fun waitForError(): Boolean = waitFor(errorMessage)
 }

@@ -19,14 +19,11 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.25.3")
 }
 
-// Ensure Java sources under src/main/kotlin are compiled and on the classpath
 sourceSets {
     val main by getting {
-        java.srcDirs("src/main/java", "src/main/kotlin")
         kotlin.srcDirs("src/main/kotlin")
     }
     val test by getting {
-        java.srcDirs("src/test/java", "src/test/kotlin")
         kotlin.srcDirs("src/test/kotlin")
     }
 }
