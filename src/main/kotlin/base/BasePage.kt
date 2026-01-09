@@ -1,14 +1,16 @@
 package base
 
+import assertions.UiAssert
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.TimeoutError
+import config.Config
 import utils.RetryUtil
 import java.time.Duration
 
 abstract class BasePage(protected val page: Page) {
     private companion object {
-        const val RETRIES = 3
-        val DELAY: Duration = Duration.ofMillis(300)
+        val RETRIES = Config.retries()
+        val DELAY : Duration = Duration.ofMillis(Config.timeoutMs().toLong())
     }
 
     fun visible(selector: String) {
@@ -38,6 +40,10 @@ abstract class BasePage(protected val page: Page) {
         false
     }
 
+    fun waitForUrl(pattern: String) {
+        page.waitForURL(pattern)
+    }
+
     fun clearAndType(selector: String, value: String) {
         RetryUtil.run(RETRIES, DELAY) {
             page.fill(selector, "")
@@ -55,5 +61,13 @@ abstract class BasePage(protected val page: Page) {
 
     fun check(selector: String) {
         RetryUtil.run(RETRIES, DELAY) { page.check(selector) }
+    }
+
+    fun assertUrlContains(part: String) = UiAssert.urlContains(page, part)
+    fun assertVisible(locator : String) = UiAssert.assertVisible(page, locator)
+    fun assertText(locator: String, expected: String) = UiAssert.assertText(page, locator, expected)
+
+    fun count(selector: String): Int {
+        return page.locator(selector).count()
     }
 }
